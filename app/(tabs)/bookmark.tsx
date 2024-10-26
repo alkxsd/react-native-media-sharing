@@ -3,13 +3,12 @@ import React from 'react'
 
 type Props = {}
 
-const TabsLayout = (props: Props) => {
+const Bookmark = (props: Props) => {
   return (
     <View>
-      <Text>TabsLayout</Text>
+      <Text>Bookmark</Text>
     </View>
   )
 }
 
-export default TabsLayout
- 
+export default Bookmark

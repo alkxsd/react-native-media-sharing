@@ -3,13 +3,12 @@ import React from 'react'
 
 type Props = {}
 
-const TabsLayout = (props: Props) => {
+const Profile = (props: Props) => {
   return (
     <View>
-      <Text>TabsLayout</Text>
+      <Text>Profile</Text>
     </View>
   )
 }
 
-export default TabsLayout
- 
+export default Profile
