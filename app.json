@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Aora",
-    "slug": "aora",
+    "name": "Motorpilot",
+    "slug": "motorpilot",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "aora",
+    "icon": "./assets/images/logo.png",
+    "scheme": "motorpilot",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
