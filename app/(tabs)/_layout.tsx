@@ -1,8 +1,9 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Tabs, Redirect } from 'expo-router'
-import { icons } from '../../constants'
+import { icons } from '@/constants/Index'
 import TabIcon from '@/components/navigation/TabIcon'
+import { AppColors } from '@/constants/AppColors'
 
 type Props = {}
 
