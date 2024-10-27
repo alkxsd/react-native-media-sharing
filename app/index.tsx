@@ -1,9 +1,12 @@
 import { Image, ScrollView, Text, View } from "react-native"
-import { Redirect, router } from 'expo-router'
+import { router } from 'expo-router'
 import { StatusBar } from "expo-status-bar"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { images } from "../constants"
+import { images } from "@/constants/Index"
+import { AppColors } from "@/constants/AppColors"
+import ImageLogo from "@/components/ImageLogo"
 import CustomButton from "@/components/CustomButton"
+
 export default function Index() {
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -13,11 +16,7 @@ export default function Index() {
         }}
       >
         <View className="w-full items-center justify-center min-h-[85vh] px-4">
-          <Image
-            source={images.logo}
-            className="w-[260px] h-[70px]"
-            resizeMode="contain"
-          />
+          <ImageLogo />
           <Image
             source={images.cards}
             className="max-w-[380px] w-full h-[300px]"
@@ -41,7 +40,7 @@ export default function Index() {
           />
         </View>
       </ScrollView>
-      <StatusBar backgroundColor="#161622" style="light"/>
+      <StatusBar backgroundColor={AppColors.primary.DEFAULT} style="light"/>
     </SafeAreaView>
   );
 }
