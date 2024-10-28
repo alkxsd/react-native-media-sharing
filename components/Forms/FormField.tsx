@@ -9,16 +9,24 @@ interface Props extends TextInputProps {
   placeholder?: string
   handleChangeText?: (text: string) => void
   otherStyles: string
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 }
 
-const FormField = ({title, value, placeholder, handleChangeText, otherStyles, ...props}: Props) => {
+const FormField = ({
+  title,
+  value,
+  placeholder,
+  handleChangeText,
+  otherStyles,
+  autoCapitalize = 'none', // Default value for autoCapitalize
+  ...props
+}: Props) => {
 
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
   const [isFocused, setIsFocused] = useState<boolean>(false)
 
   const isPassword = title.toLowerCase().includes('password'); // Case-insensitive check
-
   return (
     <View className={`gap-2 ${otherStyles}`}>
       <Text className='text-base text-gray-100 font-pmedium'>{title}</Text>
@@ -43,6 +51,8 @@ const FormField = ({title, value, placeholder, handleChangeText, otherStyles, ..
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           secureTextEntry={isPassword && !showPassword}
+          autoCapitalize={autoCapitalize}
+          autoCorrect={false}
           {...props}
         />
 
