@@ -2,6 +2,7 @@ import { View, Text, TextInput, TextInputProps, TouchableOpacity, Image } from '
 import React, { useState } from 'react'
 import { AppColors } from '@/constants/AppColors'
 import icons from '@/constants/Icons'
+import { Controller } from 'react-hook-form'
 
 interface Props extends TextInputProps {
   name: string
@@ -31,45 +32,49 @@ const FormTextInput = ({
   return (
     <View className={`gap-2 ${otherStyles}`}>
       <Text className='text-base text-gray-100 font-pmedium'>{title}</Text>
-      <View className={`
-        w-full
-        h-16
-        bg-black-100
-        rounded-2xl
-        border
-        flex
-        flex-row
-        items-center
-        ${isFocused ? 'border-secondary' : 'border-black-300'}
-        ${isPassword ? 'pl-4' : 'px-4'}
-      `}>
-        <TextInput
-          className="flex-1 text-white font-psemibold text-base"
-          value={value}
-          placeholder={placeholder}
-          placeholderTextColor={AppColors.placeholderColor}
-          onChangeText={handleChangeText}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          secureTextEntry={isPassword && !showPassword}
-          autoCapitalize={autoCapitalize}
-          autoCorrect={false}
-          {...props}
-        />
-
-        {isPassword && (
-          <TouchableOpacity
-            onPress={() => setShowPassword(!showPassword)}
-            className='border-l border-black-300 h-full justify-center w-auto px-4'
-          >
-            <Image
-              source={!showPassword ? icons.eye : icons.eyeHide}
-              className="w-6 h-6"
-              resizeMode="contain"
+      <Controller
+        control={control}
+        name={name}
+        render={({ field: {onChange, onBlur, value, ref } }) => (
+          <View className={` w-full h-16  bg-black-100 rounded-2xl border flex flex-row items-center
+            ${isFocused ? 'border-secondary' : 'border-black-300'}
+            ${isPassword ? 'pl-4' : 'px-4'}
+          `}>
+            <TextInput
+              className="flex-1 text-white font-psemibold text-base"
+              value={value}
+              placeholder={placeholder}
+              placeholderTextColor={AppColors.placeholderColor}
+              onChangeText={onChange}
+              onFocus={() => {
+                setIsFocused(true);
+                onFocus(); // Call the onFocus from React Hook Form
+              }}
+              onBlur={() => {
+                setIsFocused(false);
+                onBlur(); // Call the onBlur from React Hook Form
+              }}
+              secureTextEntry={isPassword && !showPassword}
+              autoCapitalize={autoCapitalize}
+              autoCorrect={false}
+              {...props}
             />
-          </TouchableOpacity>
+
+            {isPassword && (
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                className='border-l border-black-300 h-full justify-center w-auto px-4'
+              >
+                <Image
+                  source={!showPassword ? icons.eye : icons.eyeHide}
+                  className="w-6 h-6"
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            )}
+          </View>
         )}
-      </View>
+      />
     </View>
   )
 }
