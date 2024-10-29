@@ -24,6 +24,7 @@ export const AppColors = {
   gray: {
     100: "#E8E8E8", // Light gray - a neutral background option
     200: "#D3D3D3", // Medium gray - for subtle separation
+    300: "#989898"
   },
-  placeholderColor: "#7b7b8b"
+  placeholderColor: "#7b7b8b",
 };

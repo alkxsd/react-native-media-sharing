@@ -68,6 +68,8 @@ const SignUp = (props: Props) => {
       let message = '';
       if (error.code === 'auth/email-already-in-use') {
         message = 'Email already in use.'
+      } else if ('auth/invalid-email') {
+        message = 'Invalid email address.'
       } else {
         message = 'Unable to create your account. Please try again later.'
         console.log('ERR', error)
@@ -129,7 +131,6 @@ const SignUp = (props: Props) => {
               value={form.confirmPassword}
               handleChangeText={(v: string) => setForm({ ...form, confirmPassword: v })}
               otherStyles="mt-7"
-              secureTextEntry={true}
             />
             {errorMessage && <ErrorMessage message={errorMessage} />}
             <CustomButton

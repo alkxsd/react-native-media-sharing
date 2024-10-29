@@ -18,8 +18,8 @@ type Props = {}
 
 const SignIn = (props: Props) => {
   const [form, setForm] = useState<FormState>({
-    email: '',
-    password: '',
+    email: 'john@example.com',
+    password: 'secret123',
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -38,15 +38,15 @@ const SignIn = (props: Props) => {
 
     try {
       const user = await signInWithEmailAndPassword(FIREBASE_AUTH, form.email, form.password)
-      console.log(user);
-      if (user) router.replace('/(tabs)')
+      if (user) router.replace('/(tabs)/home')
     } catch (error: any) {
       let message = '';
       if (error.code === 'auth/invalid-credential') {
         message = 'Incorrect email or password!'
+      } else if ('auth/invalid-email') {
+        message = 'Invalid email address.'
       } else {
         message = 'Unable to login. Please try again later.'
-        console.log('ERR', error)
       }
       setErrorMessage(message)
       setIsLoading(false)

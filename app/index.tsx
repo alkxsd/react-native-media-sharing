@@ -6,8 +6,24 @@ import { images } from "@/constants/Index"
 import { AppColors } from "@/constants/AppColors"
 import ImageLogo from "@/components/ImageLogo"
 import CustomButton from "@/components/CustomButton"
+import { useAuth } from "@/context/AuthContext"
+import { useEffect } from "react"
 
 export default function Index() {
+  const { user, isAuthLoading } = useAuth()
+
+  useEffect(() => {
+    // TODO: implement loading effect
+    if (user) {
+      router.replace('/(tabs)/home')
+    }
+  }, [user])
+
+  if (isAuthLoading) {
+    return <Text>Loading...</Text>; // Or a loading indicator screen
+  }
+
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView

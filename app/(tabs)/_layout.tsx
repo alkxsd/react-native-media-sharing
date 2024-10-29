@@ -1,25 +1,38 @@
-import { Image, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { Tabs, Redirect } from 'expo-router'
+import React, { useEffect } from 'react'
+import { Tabs, router } from 'expo-router'
 import { icons } from '@/constants/Index'
 import TabIcon from '@/components/navigation/TabIcon'
 import { AppColors } from '@/constants/AppColors'
+import { useAuth } from '@/context/AuthContext'
 
 type Props = {}
 
 const TabsLayout = (props: Props) => {
+
+  const { user, isAuthLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthLoading && !user) {
+      router.replace('/sign-in');
+    }
+  }, [user, isAuthLoading]);
+
+  if (isAuthLoading) {
+    return null; // Or a loading indicator
+  }
+
   return (
     <>
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,
-          tabBarActiveTintColor: '#FFA001',
-          tabBarInactiveTintColor: '#CDCDE0',
+          tabBarActiveTintColor: AppColors.secondary.DEFAULT,
+          tabBarInactiveTintColor: AppColors.gray[200] ,
           tabBarStyle: {
             backgroundColor: '#161622',
             borderTopWidth: 1,
             borderTopColor: '#232533',
-            height: 84
+            height: 85
           }
         }}
       >
