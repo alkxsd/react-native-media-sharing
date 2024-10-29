@@ -7,54 +7,48 @@ import images from '@/constants/Images'
 import ErrorMessage from '@/components/Forms/ErrorMessage'
 import { FIREBASE_AUTH } from '@/FirebaseConfig'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-interface FormState {
-  fullname: string;
-  email: string;
-  password: string;
-  confirmPassword: string; // Add confirmPassword
-}
+export const signUpSchema = z.object({
+  fullname: z
+    .string()
+    .min(2, { message: 'Full name must be at least 2 characters long' })
+    .max(50, { message: 'Full name must not exceed 50 characters' })
+    .min(1, { message: 'Full name is required' }),
+  email: z
+    .string()
+    .email({ message: 'Invalid email address' })
+    .min(1, { message: 'Email is required' }),
+  password: z
+    .string()
+    .min(6, { message: 'Password must be at least 6 characters long' })
+    .min(1, { message: 'Password is required' }),
+  confirmPassword: z
+    .string()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"], // path of error
+})
+
+export type SignUpFormData = z.infer<typeof signUpSchema>;
 
 type Props = {}
 
 const SignUp = (props: Props) => {
-  const [form, setForm] = useState<FormState>({
-    fullname: '',
-    email: '',
-    password: '',
-    confirmPassword: '', // Initialize confirmPassword
-  });
+  const { control, handleSubmit, setError ,formState: { errors } } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+  })
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [errorMessage, setErrorMessage] = useState<string>('');
-
-  const handleSubmit = async () => {
-    setIsLoading(true)
-    setErrorMessage('')
-
-    // Basic validation
-    if (!form.fullname || !form.email || !form.password || !form.confirmPassword) {
-      setErrorMessage('All fields are required.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (form.password !== form.confirmPassword) {
-      setErrorMessage('Passwords do not match.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (form.password.length < 6) {
-      setErrorMessage('Password must be at least 6 characters long.');
-      setIsLoading(false);
-      return;
-    }
+  const submit = async (data: SignUpFormData) => {
+    setIsLoading(true);
 
     try {
       // Firebase signup
-      const userCredential = await createUserWithEmailAndPassword(FIREBASE_AUTH, form.email, form.password);
+      const userCredential = await createUserWithEmailAndPassword(FIREBASE_AUTH, data.email, data.password);
       const user = userCredential.user;
       console.log('Registered user:', user);
 
@@ -62,20 +56,21 @@ const SignUp = (props: Props) => {
 
       if (user) router.replace('/(tabs)'); // Redirect to sign-in after successful signup
     } catch (error: any) {
-      let message = '';
       if (error.code === 'auth/email-already-in-use') {
-        message = 'Email already in use.'
-      } else if ('auth/invalid-email') {
-        message = 'Invalid email address.'
+        setError('email', { type: 'manual', message: 'Email already in use.' });
+      } else if (error.code === 'auth/invalid-email') {
+        setError('email', { type: 'manual', message: 'Invalid email address.' })
       } else {
-        message = 'Unable to create your account. Please try again later.'
-        console.log('ERR', error)
+        // For other errors, you can set the error on the root level
+        setError('root.signup', {
+          type: 'manual',
+          message: 'Unable to create your account. Please try again later.'
+        });
       }
-      setErrorMessage(message)
+    } finally {
       setIsLoading(false)
     }
-
-  };
+  }
 
   return (
     <SafeAreaView
@@ -99,37 +94,47 @@ const SignUp = (props: Props) => {
             </Text>
 
             <FormTextInput
+              name="fullname"
+              control={control}
               title="Full name"
-              value={form.fullname}
-              handleChangeText={(v: string) => setForm({...form, fullname: v})}
-              otherStyles='mt-10'
+              placeholder="Enter your full name"
+              otherStyles="mt-10"
             />
+            {errors.fullname && <ErrorMessage message={errors.fullname.message ?? ''} />}
+
             <FormTextInput
+              name="email"
+              control={control}
               title="Email"
-              value={form.email}
-              handleChangeText={(v: string) => setForm({...form, email: v})}
-              otherStyles='mt-7'
+              placeholder="Enter your email"
+              otherStyles="mt-7"
               keyboardType="email-address"
             />
+            {errors.email && <ErrorMessage message={errors.email.message ?? ''} />}
+
             <FormTextInput
+              name="password"
+              control={control}
               title="Password"
-              value={form.password}
-              handleChangeText={(v: string) => setForm({...form, password: v})}
-              otherStyles='mt-7'
-            />
-            <FormTextInput
-              title="Confirm Password"
-              value={form.confirmPassword}
-              handleChangeText={(v: string) => setForm({ ...form, confirmPassword: v })}
+              placeholder="Enter your password"
               otherStyles="mt-7"
             />
-            {errorMessage && <ErrorMessage message={errorMessage} />}
+            {errors.password && <ErrorMessage message={errors.password.message ?? ''} />}
+            <FormTextInput
+              name="confirmPassword"
+              control={control}
+              title="Confirm Password"
+              placeholder="Confirm your password"
+              otherStyles="mt-7"
+            />
+           {errors.confirmPassword && <ErrorMessage message={errors.confirmPassword.message ?? ''} />}
             <CustomButton
               title="Create account"
-              handlePress={handleSubmit}
-              containerStyles={`w-full ${errorMessage ? 'mt-2': 'mt-11'}`}
+              handlePress={handleSubmit(submit)}
+              containerStyles={`w-full mt-7`}
               isLoading={isLoading}
             />
+            {errors.root?.signup && <ErrorMessage message={errors.root.signup.message ?? ''} />}
             <View
               className='flex flex-row pt-5 justify-center gap-2'
             >
