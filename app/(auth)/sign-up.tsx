@@ -1,7 +1,6 @@
 import { SafeAreaView, ScrollView, Text, View, Image, Platform, KeyboardAvoidingView } from 'react-native'
 import React, { useState } from 'react'
-import ImageLogo from '@/components/ImageLogo'
-import FormField from '@/components/Forms/FormField'
+import FormTextInput from '@/components/Forms/FormTextInput'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router';
 import images from '@/constants/Images'
@@ -11,7 +10,6 @@ import { createUserWithEmailAndPassword } from 'firebase/auth'
 
 interface FormState {
   fullname: string;
-  username: string;
   email: string;
   password: string;
   confirmPassword: string; // Add confirmPassword
@@ -22,7 +20,6 @@ type Props = {}
 const SignUp = (props: Props) => {
   const [form, setForm] = useState<FormState>({
     fullname: '',
-    username: '',
     email: '',
     password: '',
     confirmPassword: '', // Initialize confirmPassword
@@ -37,7 +34,7 @@ const SignUp = (props: Props) => {
     setErrorMessage('')
 
     // Basic validation
-    if (!form.fullname || !form.username || !form.email || !form.password || !form.confirmPassword) {
+    if (!form.fullname || !form.email || !form.password || !form.confirmPassword) {
       setErrorMessage('All fields are required.');
       setIsLoading(false);
       return;
@@ -101,32 +98,26 @@ const SignUp = (props: Props) => {
               Sign up to <Text className='text-secondary-100'>Motorpilot</Text>
             </Text>
 
-            <FormField
+            <FormTextInput
               title="Full name"
               value={form.fullname}
               handleChangeText={(v: string) => setForm({...form, fullname: v})}
               otherStyles='mt-10'
             />
-            <FormField
-              title="Username"
-              value={form.username}
-              handleChangeText={(v: string) => setForm({...form, username: v})}
-              otherStyles='mt-7'
-            />
-            <FormField
+            <FormTextInput
               title="Email"
               value={form.email}
               handleChangeText={(v: string) => setForm({...form, email: v})}
               otherStyles='mt-7'
               keyboardType="email-address"
             />
-            <FormField
+            <FormTextInput
               title="Password"
               value={form.password}
               handleChangeText={(v: string) => setForm({...form, password: v})}
               otherStyles='mt-7'
             />
-            <FormField
+            <FormTextInput
               title="Confirm Password"
               value={form.confirmPassword}
               handleChangeText={(v: string) => setForm({ ...form, confirmPassword: v })}

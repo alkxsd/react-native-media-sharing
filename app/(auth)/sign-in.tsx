@@ -1,7 +1,6 @@
 import { SafeAreaView, ScrollView, Text, View, Image, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useState } from 'react'
-import ImageLogo from '@/components/ImageLogo'
-import FormField from '@/components/Forms/FormField'
+import FormTextInput from '@/components/Forms/FormTextInput'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
 import images from '@/constants/Images'
@@ -73,14 +72,14 @@ const SignIn = (props: Props) => {
             >
               Login in to <Text className='text-secondary-100'>Motorpilot</Text>
             </Text>
-            <FormField
+            <FormTextInput
               title="Email"
               value={form.email}
               handleChangeText={(v: string) => setForm({...form, email: v})}
               otherStyles='mt-7'
               keyboardType="email-address"
             />
-            <FormField
+            <FormTextInput
               title="Password"
               value={form.password}
               handleChangeText={(v: string) => setForm({...form, password: v})}

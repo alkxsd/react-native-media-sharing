@@ -4,19 +4,19 @@ import { AppColors } from '@/constants/AppColors'
 import icons from '@/constants/Icons'
 
 interface Props extends TextInputProps {
+  name: string
+  control: any
   title: string
-  value: string
   placeholder?: string
-  handleChangeText?: (text: string) => void
   otherStyles: string
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 }
 
-const FormField = ({
+const FormTextInput = ({
+  name,
+  control,
   title,
-  value,
   placeholder,
-  handleChangeText,
   otherStyles,
   autoCapitalize = 'none', // Default value for autoCapitalize
   ...props
@@ -27,6 +27,7 @@ const FormField = ({
   const [isFocused, setIsFocused] = useState<boolean>(false)
 
   const isPassword = title.toLowerCase().includes('password'); // Case-insensitive check
+
   return (
     <View className={`gap-2 ${otherStyles}`}>
       <Text className='text-base text-gray-100 font-pmedium'>{title}</Text>
@@ -73,4 +74,4 @@ const FormField = ({
   )
 }
 
-export default FormField
+export default FormTextInput
