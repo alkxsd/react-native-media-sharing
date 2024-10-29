@@ -1,5 +1,8 @@
 import { SafeAreaView, ScrollView, Text, View, Image, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import FormTextInput from '@/components/Forms/FormTextInput'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
@@ -8,38 +11,30 @@ import { FIREBASE_AUTH } from '@/FirebaseConfig'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import ErrorMessage from '@/components/Forms/ErrorMessage'
 
-interface FormState {
-  email: string;
-  password: string;
-}
+const signInSchema = z.object({
+  email: z.string().email('Must be a valid email address').min(1, 'Email is required'),
+  password: z.string().min(6, 'Password must be at least 6 characters long')
+})
+
+type SignInFormData = z.infer<typeof signInSchema>
 
 type Props = {}
 
 const SignIn = (props: Props) => {
-  const [form, setForm] = useState<FormState>({
-    email: 'john@example.com',
-    password: 'secret123',
-  });
+  const { control, handleSubmit, setError ,formState: { errors } } = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
+  })
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const [errorMessage, setErrorMessage] = useState<string>('')
-
-  const handleSubmit = async () => {
+  const submit = async (data: SignInFormData) => {
     // TODO: prevent brute-force login, limit login only?
     setIsLoading(true)
-    setErrorMessage('')
-    if (form.email === '' || form.password === '') {
-      setErrorMessage('Email or password must not be empty');
-      setIsLoading(false)
-      return;
-    }
-
     try {
-      const user = await signInWithEmailAndPassword(FIREBASE_AUTH, form.email, form.password)
+      const user = await signInWithEmailAndPassword(FIREBASE_AUTH, data.email, data.password)
       if (user) router.replace('/(tabs)/home')
     } catch (error: any) {
-      let message = '';
+      let message = ''
       if (error.code === 'auth/invalid-credential') {
         message = 'Incorrect email or password!'
       } else if ('auth/invalid-email') {
@@ -47,7 +42,10 @@ const SignIn = (props: Props) => {
       } else {
         message = 'Unable to login. Please try again later.'
       }
-      setErrorMessage(message)
+      setError('root.firebase', {
+        type: 'manual',
+        message: message, // Use the Firebase error message directly
+      });
       setIsLoading(false)
     }
   };
@@ -73,25 +71,27 @@ const SignIn = (props: Props) => {
               Login in to <Text className='text-secondary-100'>Motorpilot</Text>
             </Text>
             <FormTextInput
+              name='email'
               title="Email"
-              value={form.email}
-              handleChangeText={(v: string) => setForm({...form, email: v})}
+              control={control}
               otherStyles='mt-7'
               keyboardType="email-address"
             />
+            {errors.email && <ErrorMessage message={errors.email.message ?? ''} />}
             <FormTextInput
+              name='password'
+              control={control}
               title="Password"
-              value={form.password}
-              handleChangeText={(v: string) => setForm({...form, password: v})}
               otherStyles='mt-7'
             />
-            {errorMessage && <ErrorMessage message={errorMessage} />}
+            {errors.password && <ErrorMessage message={errors.password.message ?? ''} />}
             <CustomButton
               title="Sign in"
-              handlePress={handleSubmit}
-              containerStyles={`w-full ${errorMessage ? 'mt-2': 'mt-11'}`}
+              handlePress={handleSubmit(submit)}
+              containerStyles={`w-full mt-7`}
               isLoading={isLoading}
             />
+            {errors.root?.firebase && <ErrorMessage message={errors.root.firebase.message?? ''} />}
             <View
               className='flex flex-row pt-5 justify-center gap-2'
             >
@@ -106,7 +106,6 @@ const SignIn = (props: Props) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-
     </SafeAreaView>
   )
 }

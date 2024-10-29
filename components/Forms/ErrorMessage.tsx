@@ -7,7 +7,7 @@ type Props = {
 
 const ErrorMessage = ({message}: Props) => {
   return (
-    <View className='w-full items-center my-2'>
+    <View className='w-full mt-2'>
       <Text style={{ color: 'red' }}>{message}</Text>
     </View>
   )

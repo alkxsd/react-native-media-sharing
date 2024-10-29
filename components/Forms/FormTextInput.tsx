@@ -48,7 +48,6 @@ const FormTextInput = ({
               onChangeText={onChange}
               onFocus={() => {
                 setIsFocused(true);
-                onFocus(); // Call the onFocus from React Hook Form
               }}
               onBlur={() => {
                 setIsFocused(false);
