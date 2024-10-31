@@ -31,20 +31,20 @@ const FormTextInput = ({
 
   return (
     <View className={`gap-2 ${otherStyles}`}>
-      <Text className='text-base text-gray-100 font-pmedium'>{title}</Text>
+      <Text className='text-base text-secondary-100 font-pmedium'>{title}</Text>
       <Controller
         control={control}
         name={name}
         render={({ field: {onChange, onBlur, value, ref } }) => (
-          <View className={` w-full h-16  bg-black-100 rounded-2xl border flex flex-row items-center
-            ${isFocused ? 'border-secondary' : 'border-black-300'}
+          <View className={` w-full h-16  bg-primary rounded-2xl border flex flex-row items-center
+            ${isFocused ? 'border-white border-2' : 'border-accent'}
             ${isPassword ? 'pl-4' : 'px-4'}
           `}>
             <TextInput
-              className="flex-1 text-white font-psemibold text-base"
+              className="flex-1 text-secondary-100 font-psemibold text-base"
               value={value}
               placeholder={placeholder}
-              placeholderTextColor={AppColors.placeholderColor}
+              placeholderTextColor='#fff'
               onChangeText={onChange}
               onFocus={() => {
                 setIsFocused(true);
@@ -60,16 +60,19 @@ const FormTextInput = ({
             />
 
             {isPassword && (
-              <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                className='border-l border-black-300 h-full justify-center w-auto px-4'
-              >
-                <Image
-                  source={!showPassword ? icons.eye : icons.eyeHide}
-                  className="w-6 h-6"
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
+              <View className='border-l border-secondary h-full justify-center'>
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  className=' justify-center w-auto px-4'
+                >
+                  <Image
+                    source={!showPassword ? icons.eye : icons.eyeHide}
+                    className="w-6 h-6"
+                    resizeMode="contain"
+                    style={{ tintColor: '#8A633E' }}
+                  />
+                </TouchableOpacity>
+              </View>
             )}
           </View>
         )}

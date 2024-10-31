@@ -3,7 +3,7 @@ import { Tabs, router } from 'expo-router'
 import { icons } from '@/constants/Index'
 import TabIcon from '@/components/navigation/TabIcon'
 import { AppColors } from '@/constants/AppColors'
-import { useAuth } from '@/context/AuthContext'
+import { useAuth } from '@/contexts/AuthContext'
 
 type Props = {}
 
@@ -27,12 +27,12 @@ const TabsLayout = (props: Props) => {
         screenOptions={{
           tabBarShowLabel: false,
           tabBarActiveTintColor: AppColors.secondary.DEFAULT,
-          tabBarInactiveTintColor: AppColors.gray[200] ,
+          tabBarInactiveTintColor: AppColors.accent[200],
           tabBarStyle: {
-            backgroundColor: '#161622',
+            backgroundColor: AppColors.primary[100],
             borderTopWidth: 1,
-            borderTopColor: '#232533',
-            height: 85
+            borderTopColor: AppColors.secondary.DEFAULT,
+            height: 95
           }
         }}
       >
@@ -41,7 +41,7 @@ const TabsLayout = (props: Props) => {
           name="home"
           options={{
             title: 'Home',
-            headerShown: false,
+            headerShown: true,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={ icons.home }
@@ -52,44 +52,12 @@ const TabsLayout = (props: Props) => {
             )
           }}
         />
-        {/* Bookmark tab */}
-        <Tabs.Screen
-          name="bookmark"
-          options={{
-            title: 'Bookmark',
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={ icons.bookmark }
-                color={color}
-                name="Bookmark"
-                focused={focused}
-              />
-            )
-          }}
-        />
-        {/* Create tab */}
-        <Tabs.Screen
-          name="create"
-          options={{
-            title: 'Create',
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={ icons.plus }
-                color={color}
-                name="Create"
-                focused={focused}
-              />
-            )
-          }}
-        />
         {/* Profile tab */}
         <Tabs.Screen
           name="profile"
           options={{
             title: 'Profile',
-            headerShown: false,
+            headerShown: true,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={ icons.plus }

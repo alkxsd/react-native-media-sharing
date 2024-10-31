@@ -1,6 +1,6 @@
-import { SafeAreaView, ScrollView, Text, View, Image, KeyboardAvoidingView, Platform } from 'react-native'
+import { SafeAreaView, ScrollView, Text, KeyboardAvoidingView, Platform } from 'react-native'
 import React from 'react'
-import SignOutButton from '@/components/SignOutButton'
+import TabScreenWrapper from '@/components/TabScreenWrapper'
 
 type Props = {}
 
@@ -14,7 +14,7 @@ const Home = (props: Props) => {
         style={{ flex: 1 }}
       >
         <ScrollView>
-          <SignOutButton />
+          <Text>Home</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -1,22 +1,29 @@
 import { SafeAreaView, ScrollView, Text, View, Image, Platform, KeyboardAvoidingView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FormTextInput from '@/components/Forms/FormTextInput'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router';
 import images from '@/constants/Images'
 import ErrorMessage from '@/components/Forms/ErrorMessage'
-import { FIREBASE_AUTH } from '@/FirebaseConfig'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { signUpUser } from '@/lib/firebaseAuth';
+import Loader from '@/components/Loader';
+import { signUpUserInterface } from '@/interfaces/userInterfaces';
+import { useUserStore } from '@/stores/userStore';
 
 export const signUpSchema = z.object({
-  fullname: z
+  firstname: z
     .string()
-    .min(2, { message: 'Full name must be at least 2 characters long' })
-    .max(50, { message: 'Full name must not exceed 50 characters' })
-    .min(1, { message: 'Full name is required' }),
+    .min(2, { message: 'First name must be at least 2 characters long' })
+    .max(50, { message: 'First name must not exceed 50 characters' })
+    .min(1, { message: 'First name is required' }),
+  lastname: z
+    .string()
+    .min(2, { message: 'Last name must be at least 2 characters long' })
+    .max(50, { message: 'Last name must not exceed 50 characters' })
+    .min(1, { message: 'Last name is required' }),
   email: z
     .string()
     .email({ message: 'Invalid email address' })
@@ -37,7 +44,7 @@ export type SignUpFormData = z.infer<typeof signUpSchema>;
 type Props = {}
 
 const SignUp = (props: Props) => {
-  const { control, handleSubmit, setError ,formState: { errors } } = useForm<SignUpFormData>({
+  const { control, handleSubmit, setError, formState: { errors } } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
   })
 
@@ -48,25 +55,21 @@ const SignUp = (props: Props) => {
 
     try {
       // Firebase signup
-      const userCredential = await createUserWithEmailAndPassword(FIREBASE_AUTH, data.email, data.password);
-      const user = userCredential.user;
-      console.log('Registered user:', user);
-
-      // TODO: You might want to add user data to Firestore here
-
-      if (user) router.replace('/(tabs)'); // Redirect to sign-in after successful signup
-    } catch (error: any) {
-      if (error.code === 'auth/email-already-in-use') {
-        setError('email', { type: 'manual', message: 'Email already in use.' });
-      } else if (error.code === 'auth/invalid-email') {
-        setError('email', { type: 'manual', message: 'Invalid email address.' })
-      } else {
-        // For other errors, you can set the error on the root level
-        setError('root.signup', {
-          type: 'manual',
-          message: 'Unable to create your account. Please try again later.'
-        });
+      const signUpData: signUpUserInterface = {
+        firstName: data.firstname,
+        lastName: data.lastname,
+        email: data.email,
+        password: data.password
       }
+
+      const user = await signUpUser(signUpData)
+
+      if (user) router.replace('/(tabs)/home'); // Redirect to sign-in after successful signup
+    } catch (error: any) {
+      setError('root.signup', {
+        type: 'manual',
+        message: error.message
+      })
     } finally {
       setIsLoading(false)
     }
@@ -76,6 +79,7 @@ const SignUp = (props: Props) => {
     <SafeAreaView
       className='bg-primary h-full'
     >
+      <Loader isLoading={isLoading} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -94,13 +98,22 @@ const SignUp = (props: Props) => {
             </Text>
 
             <FormTextInput
-              name="fullname"
+              name="firstname"
               control={control}
-              title="Full name"
-              placeholder="Enter your full name"
+              title="First name"
+              placeholder="Enter your first name"
               otherStyles="mt-10"
             />
-            {errors.fullname && <ErrorMessage message={errors.fullname.message ?? ''} />}
+            {errors.firstname && <ErrorMessage message={errors.firstname.message ?? ''} />}
+
+            <FormTextInput
+              name="lastname"
+              control={control}
+              title="Last name"
+              placeholder="Enter your Last name"
+              otherStyles="mt-10"
+            />
+            {errors.lastname && <ErrorMessage message={errors.lastname.message ?? ''} />}
 
             <FormTextInput
               name="email"
@@ -138,10 +151,10 @@ const SignUp = (props: Props) => {
             <View
               className='flex flex-row pt-5 justify-center gap-2'
             >
-              <Text className='text-lg text-gray-100 font-pregular'>Have an account already?</Text>
+              <Text className='text-lg text-secondary-100 font-pregular'>Have an account already?</Text>
               <Link
                 href='/sign-in'
-                className='text-lg font-psemibold text-secondary'
+                className='text-lg font-psemibold text-secondary underline'
               >
                 Sign in
               </Link>

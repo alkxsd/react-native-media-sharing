@@ -6,8 +6,9 @@ import { images } from "@/constants/Index"
 import { AppColors } from "@/constants/AppColors"
 import ImageLogo from "@/components/ImageLogo"
 import CustomButton from "@/components/CustomButton"
-import { useAuth } from "@/context/AuthContext"
+import { useAuth } from "@/contexts/AuthContext"
 import { useEffect } from "react"
+import Loader from "@/components/Loader"
 
 export default function Index() {
   const { user, isAuthLoading } = useAuth()
@@ -19,13 +20,12 @@ export default function Index() {
     }
   }, [user])
 
-  if (isAuthLoading) {
-    return <Text>Loading...</Text>; // Or a loading indicator screen
-  }
-
 
   return (
     <SafeAreaView className="bg-primary h-full">
+      <Loader
+        isLoading={isAuthLoading}
+      />
       <ScrollView
         contentContainerStyle={{
           height: '100%'

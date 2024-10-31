@@ -7,9 +7,8 @@ import FormTextInput from '@/components/Forms/FormTextInput'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
 import images from '@/constants/Images'
-import { FIREBASE_AUTH } from '@/FirebaseConfig'
-import { signInWithEmailAndPassword } from 'firebase/auth'
 import ErrorMessage from '@/components/Forms/ErrorMessage'
+import { signInUser } from '@/lib/firebaseAuth'
 
 const signInSchema = z.object({
   email: z.string().email('Must be a valid email address').min(1, 'Email is required'),
@@ -31,21 +30,14 @@ const SignIn = (props: Props) => {
     // TODO: prevent brute-force login, limit login only?
     setIsLoading(true)
     try {
-      const user = await signInWithEmailAndPassword(FIREBASE_AUTH, data.email, data.password)
+      const user = await signInUser(data.email, data.password)
       if (user) router.replace('/(tabs)/home')
     } catch (error: any) {
-      let message = ''
-      if (error.code === 'auth/invalid-credential') {
-        message = 'Incorrect email or password!'
-      } else if ('auth/invalid-email') {
-        message = 'Invalid email address.'
-      } else {
-        message = 'Unable to login. Please try again later.'
-      }
       setError('root.firebase', {
         type: 'manual',
-        message: message, // Use the Firebase error message directly
+        message: error.message, // Use the Firebase error message directly
       });
+    } finally {
       setIsLoading(false)
     }
   };
@@ -95,10 +87,10 @@ const SignIn = (props: Props) => {
             <View
               className='flex flex-row pt-5 justify-center gap-2'
             >
-              <Text className='text-lg text-gray-100 font-pregular'>Don't have an account?</Text>
+              <Text className='text-lg text-secondary-200 font-pregular'>Don't have an account?</Text>
               <Link
                 href='/sign-up'
-                className='text-lg font-psemibold text-secondary'
+                className='text-lg font-psemibold text-secondary underline'
               >
                 Sign Up
               </Link>

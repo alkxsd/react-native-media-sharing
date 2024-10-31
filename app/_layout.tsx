@@ -3,7 +3,7 @@ import { Slot, SplashScreen, Stack } from "expo-router";
 import '../assets/css/global.css';
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
-import { AuthContextProvider } from "@/context/AuthContext";
+import { AuthContextProvider } from "@/contexts/AuthContext";
 
 
 SplashScreen.preventAutoHideAsync();
