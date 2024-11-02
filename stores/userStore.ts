@@ -1,9 +1,10 @@
 import { persist } from 'zustand/middleware'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createJSONStorage } from 'zustand/middleware'
-import { UserInterface } from '@/interfaces/userInterfaces'
+import { UserInterface, InitialApplicationData } from '@/interfaces/userInterfaces'
 import { create } from 'zustand'
-import { fetchUserDataFromFirestore } from '@/lib/firebaseHelpers'
+import { createUserFirestoreCollection, fetchUserDataFromFirestore } from '@/services/firebaseService'
+import { UserInfo } from 'firebase/auth'
 
 type UserActions = {
   setAuthUserId: (userAuthId: string | null) => void
@@ -15,36 +16,8 @@ type UserActions = {
 
 export const initialUserState: UserInterface = {
   userAuthId: null,
-  applicationData: {
-    firstName: '',
-    lastName: '',
-    middleName: '',
-    suffixName: '',
-    gender: '',
-    birthDate: null,
-    birthPlace: '',
-    idType: '',
-    idNumber: '',
-    idFilePath: '',
-    applicationStatus: 'pending',
-    address: {
-      barangay: '',
-      zip: '',
-      address_line1: '',
-      address_line2: '',
-      city: '',
-      state: '',
-      country: '',
-    },
-    employment: {
-      companyName: '',
-      contact: '',
-      designation: '',
-      position: '',
-      location: '',
-    },
-  },
-  isLoading: false,
+  applicationData: InitialApplicationData,
+  isUserLoading: false,
   error: null,
 }
 
@@ -63,13 +36,34 @@ export const useUserStore = create<UserInterface & UserActions>()(
         })),
       updateApplicationData: (data) => set((state) => ({ applicationData: { ...state.applicationData, ...data } })),
       resetApplicationData: () => set({ applicationData: initialUserState.applicationData }),
-      fetchUserData: async (userAuthId: string) =>{
-        set({ isLoading: true, error: null });
+      fetchUserData: async (userAuthId: string) => {
+        set({ isUserLoading: true, error: null });
         try {
-          const response = await fetchUserDataFromFirestore(userAuthId)
-          set({ applicationData: response, isLoading: false })
+          const response = await fetchUserDataFromFirestore(userAuthId);
+          set({ applicationData: response });
         } catch (error: any) {
-          set({ error: error.message, isLoading: false })
+          // If user data not found, create a new document in Firestore
+          if (error.message === 'User data not found.') {
+            try {
+              const signUpData =  {
+                firstName: initialUserState.applicationData.firstName,
+                lastName: initialUserState.applicationData.lastName,
+                email: '',
+                password: ''
+              }
+              await createUserFirestoreCollection({ uid: userAuthId } as UserInfo, signUpData); // Assuming you have access to firstName and lastName
+              // Re-fetch the data after creating the document
+              const response = await fetchUserDataFromFirestore(userAuthId);
+              set({ applicationData: response });
+            } catch (createError) {
+              console.error('Error creating user data:', createError);
+              set({ error: 'Failed to create user data.' });
+            }
+          } else {
+            set({ error: error.message });
+          }
+        } finally {
+          set({ isUserLoading: false });
         }
       }
     }),

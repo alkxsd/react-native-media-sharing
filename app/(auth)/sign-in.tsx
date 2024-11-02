@@ -8,7 +8,7 @@ import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
 import images from '@/constants/Images'
 import ErrorMessage from '@/components/Forms/ErrorMessage'
-import { signInUser } from '@/lib/firebaseAuth'
+import { signInUser } from '@/services/firebaseService'
 
 const signInSchema = z.object({
   email: z.string().email('Must be a valid email address').min(1, 'Email is required'),

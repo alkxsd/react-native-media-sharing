@@ -8,7 +8,7 @@ const Profile = (props: Props) => {
   return (
     <SafeAreaView
       className='bg-primary h-full'
-    >
+  >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}

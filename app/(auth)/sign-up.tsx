@@ -8,9 +8,9 @@ import ErrorMessage from '@/components/Forms/ErrorMessage'
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signUpUser } from '@/lib/firebaseAuth';
+import { signUpUser } from '@/services/firebaseService';
 import Loader from '@/components/Loader';
-import { signUpUserInterface } from '@/interfaces/userInterfaces';
+import { SignUpUserInterface } from '@/interfaces/userInterfaces';
 import { useUserStore } from '@/stores/userStore';
 
 export const signUpSchema = z.object({
@@ -55,7 +55,7 @@ const SignUp = (props: Props) => {
 
     try {
       // Firebase signup
-      const signUpData: signUpUserInterface = {
+      const signUpData: SignUpUserInterface = {
         firstName: data.firstname,
         lastName: data.lastname,
         email: data.email,
