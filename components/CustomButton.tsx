@@ -6,10 +6,12 @@ title: string
   handlePress?: () => void
   containerStyles?: string
   textStyles?: string
-  isLoading?: boolean
+  isLoading?: boolean,
+  disabled?: boolean
 }
 
-const CustomButton = ({title, handlePress, containerStyles, textStyles, isLoading}: Props) => {
+const CustomButton = ({title, handlePress, containerStyles, textStyles, isLoading, disabled}: Props) => {
+
   return (
     <TouchableOpacity
       onPress={handlePress}
@@ -23,7 +25,7 @@ const CustomButton = ({title, handlePress, containerStyles, textStyles, isLoadin
         ${containerStyles}
         ${isLoading ? 'opacity-50' : ''}
       `}
-      disabled={isLoading}
+      disabled={isLoading || disabled}
     >
       <Text
         className={`text-primary font-psemibold text-lg ${textStyles}`}

@@ -41,18 +41,11 @@ const TabsLayout = (props: Props) => {
         setAuthUserId(user.uid)
       }
     }
-  }, [user, isAuthLoading, userAuthId, applicationData])
-
-  if (isAuthLoading) {
-    return <Loader isLoading={isAuthLoading} />
-  }
-
-  if (isUserLoading) {
-    return <Loader isLoading={isUserLoading} />
-  }
+  }, [user, isAuthLoading, userAuthId])
 
   return (
     <>
+      <Loader isLoading={isAuthLoading || isUserLoading} />
       <Tabs
         screenOptions={{
           tabBarShowLabel: false,

@@ -1,6 +1,6 @@
 import { SafeAreaView, ScrollView, Text, View, Image, Platform, KeyboardAvoidingView } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import FormTextInput from '@/components/Forms/FormTextInput'
+import CustomTextInput from '@/components/Forms/CustomTextInput'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router';
 import images from '@/constants/Images'
@@ -97,7 +97,7 @@ const SignUp = (props: Props) => {
               Sign up to <Text className='text-secondary-100'>Motorpilot</Text>
             </Text>
 
-            <FormTextInput
+            <CustomTextInput
               name="firstname"
               control={control}
               title="First name"
@@ -106,7 +106,7 @@ const SignUp = (props: Props) => {
             />
             {errors.firstname && <ErrorMessage message={errors.firstname.message ?? ''} />}
 
-            <FormTextInput
+            <CustomTextInput
               name="lastname"
               control={control}
               title="Last name"
@@ -115,7 +115,7 @@ const SignUp = (props: Props) => {
             />
             {errors.lastname && <ErrorMessage message={errors.lastname.message ?? ''} />}
 
-            <FormTextInput
+            <CustomTextInput
               name="email"
               control={control}
               title="Email"
@@ -125,7 +125,7 @@ const SignUp = (props: Props) => {
             />
             {errors.email && <ErrorMessage message={errors.email.message ?? ''} />}
 
-            <FormTextInput
+            <CustomTextInput
               name="password"
               control={control}
               title="Password"
@@ -133,7 +133,7 @@ const SignUp = (props: Props) => {
               otherStyles="mt-7"
             />
             {errors.password && <ErrorMessage message={errors.password.message ?? ''} />}
-            <FormTextInput
+            <CustomTextInput
               name="confirmPassword"
               control={control}
               title="Confirm Password"

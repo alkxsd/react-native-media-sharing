@@ -1,7 +1,7 @@
-import { SafeAreaView, ScrollView, Text, KeyboardAvoidingView, Platform } from 'react-native'
+import { SafeAreaView, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
 import React from 'react'
-import TabScreenWrapper from '@/components/TabScreenWrapper'
 import { useUserStore } from '@/stores/userStore'
+import ApplicationForm from '@/components/ApplicationForm'
 
 type Props = {}
 
@@ -18,7 +18,7 @@ const Home = (props: Props) => {
         style={{ flex: 1 }}
       >
         <ScrollView>
-          <Text>Hello, {userApplicationData.firstName}</Text>
+          <ApplicationForm />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

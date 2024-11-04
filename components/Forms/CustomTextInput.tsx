@@ -9,11 +9,11 @@ interface Props extends TextInputProps {
   control: any
   title: string
   placeholder?: string
-  otherStyles: string
+  otherStyles?: string
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 }
 
-const FormTextInput = ({
+const CustomTextInput = ({
   name,
   control,
   title,
@@ -81,4 +81,4 @@ const FormTextInput = ({
   )
 }
 
-export default FormTextInput
+export default CustomTextInput

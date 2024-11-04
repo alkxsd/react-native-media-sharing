@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import FormTextInput from '@/components/Forms/FormTextInput'
+import CustomTextInput from '@/components/Forms/CustomTextInput'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
 import images from '@/constants/Images'
@@ -62,7 +62,7 @@ const SignIn = (props: Props) => {
             >
               Login in to <Text className='text-secondary-100'>Motorpilot</Text>
             </Text>
-            <FormTextInput
+            <CustomTextInput
               name='email'
               title="Email"
               control={control}
@@ -70,7 +70,7 @@ const SignIn = (props: Props) => {
               keyboardType="email-address"
             />
             {errors.email && <ErrorMessage message={errors.email.message ?? ''} />}
-            <FormTextInput
+            <CustomTextInput
               name='password'
               control={control}
               title="Password"

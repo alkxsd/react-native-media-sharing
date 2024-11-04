@@ -25,6 +25,7 @@ export interface ApplicationData {
   middleName: string;
   suffixName: string;
   gender: 'male' | 'female' | 'other' | '';
+  genderOther?: string
   birthDate: Date | null;
   birthPlace: string;
   idType: string;
@@ -74,6 +75,7 @@ export const InitialApplicationData: ApplicationData = {
   middleName: '',
   suffixName: '',
   gender: '',
+  genderOther: '',
   birthDate: null,
   birthPlace: '',
   idType: '',
