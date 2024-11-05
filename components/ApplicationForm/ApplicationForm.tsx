@@ -31,13 +31,15 @@ const ApplicationForm = (props: Props) => {
 
   const handleNext = async () => {
     try {
-      // Validate and get data from the current step
-      await stepRefs.current[currentStep]?.submit();
-
-      // setNextStep()
+      const isValid = await stepRefs.current[currentStep]?.submit();
+      if (isValid) {
+        await setNextStep();
+      } else {
+        // Optionally show an error message to the user
+        console.error("Validation failed on current step");
+      }
     } catch (error) {
       console.error("Error submitting step:", error);
-      // Handle the error, e.g., show an error message to the user
     }
   }
 

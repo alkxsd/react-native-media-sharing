@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
+import React, { forwardRef, useImperativeHandle, useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,7 +8,7 @@ import { ApplicationData } from '@/interfaces/userInterfaces'
 import CustomTextInput from '@/components/Forms/CustomTextInput'
 import ErrorMessage from '@/components/Forms/ErrorMessage'
 import CustomDropdown from '@/components/Forms/CustomDropdown'
-import DateTimePicker from '@react-native-community/datetimepicker'
+import CustomDatePicker from '@/components/Forms/CustomDatePicker'
 
 type Props = {}
 
@@ -34,18 +34,37 @@ const Step1 = forwardRef((props: Props, ref) => {
   const { control, handleSubmit, setError, formState: { errors }} = useForm<formData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ...applicationData, // Destructure applicationData here
+      ...applicationData,
+      birthDate: applicationData.birthDate ? new Date(applicationData.birthDate) : undefined,
     }
   })
 
   // Use useImperativeHandle to expose the submit function
   useImperativeHandle(ref, () => ({
-    submit: async () => {
-      await handleSubmit(onSubmit)();
+    submit: () => {
+      return new Promise((resolve) => {
+        handleSubmit((data: formData) => {
+          const updatedData: Partial<ApplicationData> = {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            middleName: data.middleName || '',
+            suffixName: data.suffixName || '',
+            gender: data.gender || '',
+            genderOther: data.genderOther || '', // I
+            birthDate: data.birthDate || null,
+            birthPlace: data.birthPlace || '',
+          };
+          updateApplicationData(updatedData);
+          resolve(true); // Resolve with true on successful submission
+        }, (errors: any) => {
+          console.error("Form errors:", errors);
+          resolve(false); // Resolve with false on validation errors
+        })();
+      });
     }
   }));
 
-  const onSubmit = (data: formData) => {
+  const onSubmit = (data: formData): boolean => {
     const updatedData: Partial<ApplicationData> = {
       firstName: data.firstName,
       lastName: data.lastName,
@@ -56,8 +75,8 @@ const Step1 = forwardRef((props: Props, ref) => {
       birthDate: data.birthDate || null,
       birthPlace: data.birthPlace || '',
     };
-    console.log('Saving Step1', updatedData)
     updateApplicationData(updatedData);
+    return true;
   };
 
 
@@ -109,6 +128,13 @@ const Step1 = forwardRef((props: Props, ref) => {
         placeholder="Enter your place of birth"
       />
       {errors.birthPlace && <ErrorMessage message={errors.birthPlace.message ?? ''} />}
+
+      <CustomDatePicker
+        name="birthDate"
+        control={control}
+        title="Birth Date"
+      />
+      {errors.birthDate && <ErrorMessage message={errors.birthDate.message ?? ''} />}
     </View>
   )
 })
