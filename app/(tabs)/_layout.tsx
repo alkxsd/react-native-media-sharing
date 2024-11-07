@@ -65,6 +65,7 @@ const TabsLayout = (props: Props) => {
           options={{
             title: 'Home',
             ...headerOptions,
+            headerShown: false,
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
                 icon={ icons.home }

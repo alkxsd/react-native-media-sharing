@@ -64,22 +64,6 @@ const Step1 = forwardRef((props: Props, ref) => {
     }
   }));
 
-  const onSubmit = (data: formData): boolean => {
-    const updatedData: Partial<ApplicationData> = {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      middleName: data.middleName || '',
-      suffixName: data.suffixName || '',
-      gender: data.gender || '',
-      genderOther: data.genderOther || '', // I
-      birthDate: data.birthDate || null,
-      birthPlace: data.birthPlace || '',
-    };
-    updateApplicationData(updatedData);
-    return true;
-  };
-
-
   return (
     <View className='flex flex-col gap-4'>
       <CustomTextInput

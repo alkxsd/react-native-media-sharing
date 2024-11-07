@@ -34,8 +34,19 @@ const Step2 = forwardRef((props: Props, ref) => {
   })
 
   useImperativeHandle(ref, () => ({
-    submit: async () => {
-      await handleSubmit(onSubmit)();
+    submit: () => {
+      return new Promise((resolve) => {
+        handleSubmit((data: formData) => {
+          const updatedData: Partial<ApplicationData> = {
+            address: { ...data } // Update the address in applicationData
+          };
+          updateApplicationData(updatedData);
+          resolve(true); // Resolve with true on successful submission
+        }, (errors: any) => {
+          console.error("Form errors:", errors);
+          resolve(false); // Resolve with false on validation errors
+        })();
+      });
     }
   }));
 
