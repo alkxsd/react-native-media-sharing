@@ -26,9 +26,7 @@ const ApplicationForm = (props: Props) => {
   const handleNext = async () => {
 
     try {
-      console.log('VALIDATE', currentStep)
       const isValid = await stepRefs.current[currentStep]?.submit();
-      console.log('VALIDATEd', isValid)
       if (isValid) {
         setNextStep()
       } else {
