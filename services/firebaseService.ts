@@ -4,9 +4,11 @@ import {
   UserInfo
 } from 'firebase/auth'
 import { FIREBASE_AUTH, FIREBASE_DB } from '@/FirebaseConfig'
-import { SignUpUserInterface, UserInterface } from '@/interfaces/userInterfaces';
+import { ApplicationData, SignUpUserInterface, UserInterface } from '@/interfaces/userInterfaces';
 import { addDoc,  query, where, getDocs, collection } from "firebase/firestore";
 import { InitialApplicationData } from '@/interfaces/userInterfaces';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getFirestore, doc, updateDoc } from "firebase/firestore";
 
 // Todo: implement Google Login
 
@@ -17,7 +19,6 @@ export const signInUser = async (email: string, password: string) => {
     const userRef = userCredential.user
     return userRef
   } catch (error: any) {
-    console.log('test', error)
     // Handle Firebase errors (e.g., throw a custom error with a user-friendly message)
     throw new Error(getFirebaseErrorMessage(error.code))
   }
@@ -59,8 +60,6 @@ export const createUserFirestoreCollection = async (userAuthInfo: UserInfo, user
   }
 };
 
-
-
 export const getFirebaseErrorMessage = (errorCode: string) => {
   switch (errorCode) {
     case 'auth/invalid-credential':
@@ -76,9 +75,7 @@ export const getFirebaseErrorMessage = (errorCode: string) => {
   }
 }
 
-export const fetchUserDataFromFirestore = async (
-  userAuthId: string
-): Promise<UserInterface['applicationData']> => {
+export const fetchUserDataFromFirestore = async (userAuthId: string): Promise<UserInterface['applicationData']> => {
   try {
     const usersCollection = collection(FIREBASE_DB, 'users');
     const q = query(usersCollection, where('userAuthId', '==', userAuthId));
@@ -95,5 +92,48 @@ export const fetchUserDataFromFirestore = async (
   } catch (error) {
     console.error('Error fetching user data:', error);
     throw error;
+  }
+};
+
+export const uploadIDToFirebaseStorage = async (file: any): Promise<string | null> => {
+  try {
+    const storage = getStorage();
+    const storageRef = ref(storage, `ids/${file.name}`); // Create a reference to the file
+
+    // Convert the file URI to an array buffer
+    const response = await fetch(file.uri);
+    const blob = await response.blob();
+    const fileData = await blob.arrayBuffer();
+
+    // Upload the file
+    await uploadBytes(storageRef, fileData);
+
+    // Get the download URL
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+  } catch (error) {
+    console.error("Error uploading ID:", error);
+    return null;
+  }
+};
+
+export const updateUserFirestoreDocument = async (userAuthId: string, applicationData: Partial<ApplicationData>) => { // Update type here
+  try {
+    const db = getFirestore();
+    // Access userAuthId from applicationData
+    const userDocRef = doc(db, "users", userAuthId!);
+
+    // Update the user's document with the new application data
+    const updatedData = {
+      applicationData: {
+        ...applicationData
+      }
+    }
+    await updateDoc(userDocRef, updatedData);
+
+    console.log("Document updated successfully!");
+  } catch (error) {
+    console.error("Error updating document:", error);
+    throw new Error('Failed to update user data. Please try again later.');
   }
 };

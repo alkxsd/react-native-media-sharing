@@ -24,12 +24,15 @@ const ApplicationForm = (props: Props) => {
   const totalSteps = steps.length;
 
   const handleNext = async () => {
+
     try {
+      console.log('VALIDATE', currentStep)
       const isValid = await stepRefs.current[currentStep]?.submit();
+      console.log('VALIDATEd', isValid)
       if (isValid) {
-        await setNextStep();
+        setNextStep()
       } else {
-        console.error("Validation failed on current step");
+        console.error("Validation failed on current step")
       }
     } catch (error) {
       console.error("Error submitting step:", error);

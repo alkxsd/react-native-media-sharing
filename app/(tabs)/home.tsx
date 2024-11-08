@@ -6,7 +6,8 @@ import ApplicationForm from '@/components/ApplicationForm'
 import Step1 from '@/components/ApplicationForm/Steps/Step1';
 import Step2 from '@/components/ApplicationForm/Steps/Step2';
 import Step3 from '@/components/ApplicationForm/Steps/Step3';
-// import Step4 from '@/components/ApplicationForm/Steps/Step4';
+import Step4 from '@/components/ApplicationForm/Steps/Step4';
+import StepFinal from '@/components/ApplicationForm/Steps/StepFinal';
 
 type Props = {}
 
@@ -17,13 +18,15 @@ const Home = (props: Props) => {
     { id: 1, title: 'Personal Details', component: <Step1 /> },
     { id: 2, title: 'Your Address', component: <Step2 /> },
     { id: 3, title: 'Current Employment', component: <Step3 /> },
-    // { id: 4, component: <Step4 /> }, // Include Step4
-    // ... other steps
+    { id: 4, title: 'Upload I.D', component: <Step4 /> }, // Include Step4
+    { id: 5, title: 'Submit your Application', component: <StepFinal /> },
   ];
 
   const totalSteps = steps.length;
 
   const currentStepData = steps.find((step) => step.id === currentStep);
+
+  const widthStepper = `w-1/${totalSteps}`;
 
   return (
     <SafeAreaView className='bg-primary h-full'>
@@ -42,7 +45,7 @@ const Home = (props: Props) => {
               {steps.map((step) => (
                 <View
                   key={step.id}
-                  className={`w-1/${totalSteps} h-2 ${currentStep >= step.id ? 'bg-accent-100' : 'bg-primary-200'}`}
+                  className={`${widthStepper} h-2 ${currentStep >= step.id ? 'bg-accent-100' : 'bg-primary-200'}`}
                 />
               ))}
             </View>

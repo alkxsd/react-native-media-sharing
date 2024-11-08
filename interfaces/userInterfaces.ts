@@ -37,7 +37,7 @@ export interface ApplicationData {
 }
 
 export interface UserInterface {
-  userAuthId: string | null;
+  userAuthId: string;
   applicationData: ApplicationData;
   isUserLoading: boolean;
   error: string | null;
