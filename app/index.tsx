@@ -8,10 +8,9 @@ import ImageLogo from "@/components/ImageLogo"
 import CustomButton from "@/components/CustomButton"
 import { useAuth } from "@/contexts/AuthContext"
 import { useEffect } from "react"
-import Loader from "@/components/Loader"
 
 export default function Index() {
-  const { user, isAuthLoading } = useAuth()
+  const { user } = useAuth()
 
   useEffect(() => {
     // TODO: implement loading effect
@@ -23,9 +22,6 @@ export default function Index() {
 
   return (
     <SafeAreaView className="bg-primary h-full">
-      <Loader
-        isLoading={isAuthLoading}
-      />
       <ScrollView
         contentContainerStyle={{
           height: '100%'

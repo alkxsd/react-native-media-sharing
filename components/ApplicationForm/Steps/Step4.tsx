@@ -45,7 +45,6 @@ const Step4 = forwardRef((props: Props, ref) => {
           updateApplicationData(updatedData);
           resolve(true);
         }, (errors: any) => {
-          console.error("Form errors:", errors);
           resolve(false);
         })();
       });

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { Tabs, router } from 'expo-router'
 import { icons } from '@/constants/Index'
 import TabIcon from '@/components/navigation/TabIcon'
@@ -6,13 +6,14 @@ import { AppColors } from '@/constants/AppColors'
 import { useAuth } from '@/contexts/AuthContext'
 import { useUserStore } from '@/stores/userStore'
 import Loader from '@/components/Loader'
-
+import Toast from 'react-native-toast-message'
 
 type Props = {}
 
 const TabsLayout = (props: Props) => {
 
   const { user, isAuthLoading } = useAuth();
+
 
   const userAuthId = useUserStore((state) => state.userAuthId)
   const setAuthUserId = useUserStore((state) => state.setAuthUserId)

@@ -12,6 +12,7 @@ type UserActions = {
   resetApplicationData: () => void
   fetchUserData: (userAuthId: string) => Promise<void>
   setFullName: (firstName: string, lastName: string) => void
+  setIsUserLoading: (loading: boolean) => void
 }
 
 export const initialUserState: UserInterface = {
@@ -65,7 +66,8 @@ export const useUserStore = create<UserInterface & UserActions>()(
         } finally {
           set({ isUserLoading: false });
         }
-      }
+      },
+      setIsUserLoading: (loading) => set({ isUserLoading: loading })
     }),
     {
       name: 'user-storage',

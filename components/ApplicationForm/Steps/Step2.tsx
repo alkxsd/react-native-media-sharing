@@ -43,7 +43,6 @@ const Step2 = forwardRef((props: Props, ref) => {
           updateApplicationData(updatedData);
           resolve(true); // Resolve with true on successful submission
         }, (errors: any) => {
-          console.error("Form errors:", errors);
           resolve(false); // Resolve with false on validation errors
         })();
       });

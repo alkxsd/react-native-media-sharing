@@ -1,9 +1,9 @@
-import { StyleSheet, View, Text } from "react-native";
-import { Slot, SplashScreen, Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import '../assets/css/global.css';
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { AuthContextProvider } from "@/contexts/AuthContext";
+import Toast from "react-native-toast-message";
 
 
 SplashScreen.preventAutoHideAsync();
@@ -35,6 +35,9 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{headerShown: false}} />
         {/* <Stack.Screen name="/search/[query]" options={{headerShown: false}} /> */}
       </Stack>
+      <Toast
+        topOffset={115}
+      />
     </AuthContextProvider>
   );
 }

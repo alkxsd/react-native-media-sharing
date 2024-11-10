@@ -2,6 +2,8 @@ import { View } from 'react-native'
 import React, { useRef } from 'react'
 import useFormStore from '@/stores/formStore'
 import CustomButton from '../CustomButton';
+import { useUserStore } from '@/stores/userStore';
+import useAlert from '@/hooks/useAlert';
 
 type Props = {
   steps: { id: number; component: JSX.Element }[];
@@ -12,6 +14,8 @@ const ApplicationForm = (props: Props) => {
   const currentStep = useFormStore((state) => state.currentStep)
   const setNextStep = useFormStore((state) => state.setNextStep)
   const setPrevStep = useFormStore((state) => state.setPrevStep)
+  const setIsUserLoading = useUserStore((state) => state.setIsUserLoading)
+  const { showAlert } = useAlert();
 
   const stepRefs = useRef<Record<number, { submit: () => Promise<any> } | null>>({});
 
@@ -24,17 +28,19 @@ const ApplicationForm = (props: Props) => {
   const totalSteps = steps.length;
 
   const handleNext = async () => {
-
+    setIsUserLoading(true);
     try {
       const isValid = await stepRefs.current[currentStep]?.submit();
       if (isValid) {
+        setIsUserLoading(false);
         setNextStep()
       } else {
-        console.error("Validation failed on current step")
+        showAlert('Pleas complete the form', 'error')
       }
-    } catch (error) {
-      console.error("Error submitting step:", error);
+    } catch (error: any) {
+      showAlert('Something went wrong', 'error', error.message)
     }
+    setIsUserLoading(false);
   }
 
   const handleFinish = async () => {

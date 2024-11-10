@@ -26,8 +26,6 @@ const Home = (props: Props) => {
 
   const currentStepData = steps.find((step) => step.id === currentStep);
 
-  const widthStepper = `w-1/${totalSteps}`;
-
   return (
     <SafeAreaView className='bg-primary h-full'>
       <KeyboardAvoidingView
@@ -45,7 +43,8 @@ const Home = (props: Props) => {
               {steps.map((step) => (
                 <View
                   key={step.id}
-                  className={`${widthStepper} h-2 ${currentStep >= step.id ? 'bg-accent-100' : 'bg-primary-200'}`}
+                  style={{ width: `${100 / totalSteps}%` }} // Use inline style for width
+                  className={`h-2 ${currentStep >= step.id ? 'bg-accent-100' : 'bg-primary-200'}`}
                 />
               ))}
             </View>
