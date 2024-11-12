@@ -10,6 +10,7 @@ interface Props extends TextInputProps {
   title: string
   placeholder?: string
   otherStyles?: string
+  disabled?: boolean
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 }
 
@@ -19,6 +20,7 @@ const CustomTextInput = ({
   title,
   placeholder,
   otherStyles,
+  disabled,
   autoCapitalize = 'none', // Default value for autoCapitalize
   ...props
 }: Props) => {
@@ -39,6 +41,7 @@ const CustomTextInput = ({
           <View className={` w-full h-16  bg-primary rounded-2xl border flex flex-row items-center
             ${isFocused ? 'border-white border-2' : 'border-accent'}
             ${isPassword ? 'pl-4' : 'px-4'}
+            ${disabled ? 'bg-gray-300 opacity-70' : ''}
           `}>
             <TextInput
               className="flex-1 text-secondary-100 font-psemibold text-base"
@@ -56,6 +59,7 @@ const CustomTextInput = ({
               secureTextEntry={isPassword && !showPassword}
               autoCapitalize={autoCapitalize}
               autoCorrect={false}
+              editable={!disabled}
               {...props}
             />
 

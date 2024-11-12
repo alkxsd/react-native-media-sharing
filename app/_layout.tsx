@@ -4,6 +4,7 @@ import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { AuthContextProvider } from "@/contexts/AuthContext";
 import Toast from "react-native-toast-message";
+import 'react-native-get-random-values';
 
 
 SplashScreen.preventAutoHideAsync();
