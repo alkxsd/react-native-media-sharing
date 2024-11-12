@@ -95,17 +95,14 @@ export const fetchUserDataFromFirestore = async (userAuthId: string): Promise<Us
   }
 };
 
-export const uploadIDToFirebaseStorage = async (file: any): Promise<string | null> => {
+const uploadFileToFirebaseStorage = async (file: any, folderName: string): Promise<string | null> => {
   try {
     const storage = getStorage();
+    const storageRef = ref(storage, `${folderName}/${new Date().getTime()}`);
 
-    // Convert the file URI to an array buffer
     const response = await fetch(file);
-
     const blob = await response.blob();
 
-    const storageRef = ref(storage, `ids/${new Date().getTime()}`); // Create a reference to the file
-    // Upload the file and return the download URL in a Promise
     return new Promise((resolve, reject) => {
       const uploadTask = uploadBytesResumable(storageRef, blob);
 
@@ -114,17 +111,26 @@ export const uploadIDToFirebaseStorage = async (file: any): Promise<string | nul
           // Implement progress bar if needed
         },
         (error) => {
-          reject(error); // Reject the promise on error
+          reject(error);
         },
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          resolve(downloadURL); // Resolve the promise with the download URL
+          resolve(downloadURL);
         }
       );
     });
   } catch (error) {
-    throw error;
+    console.error("Error uploading file:", error);
+    return null;
   }
+};
+
+export const uploadIDToFirebaseStorage = async (file: any): Promise<string | null> => {
+  return uploadFileToFirebaseStorage(file, 'ids');
+};
+
+export const uploadProfilePhotoToFirebaseStorage = async (file: any): Promise<string | null> => {
+  return uploadFileToFirebaseStorage(file, 'profilePhotos');
 };
 
 export const updateUserFirestoreDocument = async (userAuthId: string, applicationData: Partial<ApplicationData>) => {
