@@ -3,6 +3,7 @@ import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { useUserStore } from '@/stores/userStore';
 import { ApplicationData } from '@/interfaces/userInterfaces';
 import { uploadIDToFirebaseStorage, updateUserFirestoreDocument } from '@/services/firebaseService';
+import useAlert from '@/hooks/useAlert';
 
 type Props = {};
 
@@ -10,38 +11,44 @@ const StepFinal = forwardRef((props: Props, ref) => {
   const updateApplicationData = useUserStore((state) => state.updateApplicationData);
   const userAuthId = useUserStore((state) => state.userAuthId)
   const applicationData = useUserStore((state) => state.applicationData);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showAlert } = useAlert(); // Initialize the hook
 
   useImperativeHandle(ref, () => ({
-    submit: async () => {
-      setIsSubmitting(true);
-      try {
-        if (applicationData.idFilePath) {
-          const downloadURL = await uploadIDToFirebaseStorage(applicationData.idFilePath);
-          if (downloadURL) {
-            const updatedApplicationData = {
-              ...applicationData,
-              idFilePath: downloadURL,
-              applicationStatus: 'submitted' as ApplicationData['applicationStatus'] // Type assertion
-            };
+    submit: () => {
+      return new Promise<boolean>(async (resolve) => {
+        try {
+          if (applicationData.idFilePath) {
+            const downloadURL = await uploadIDToFirebaseStorage(applicationData.idFilePath);
+            if (downloadURL) {
+              const updatedApplicationData = {
+                ...applicationData,
+                idFilePath: downloadURL,
+                applicationStatus: 'submitted' as ApplicationData['applicationStatus']
+              };
 
-            await updateUserFirestoreDocument(userAuthId!, updatedApplicationData);
-            updateApplicationData(updatedApplicationData);
+              const isFirestoreUpdated = await updateUserFirestoreDocument(userAuthId!, updatedApplicationData);
+
+              if (isFirestoreUpdated) {
+                updateApplicationData(updatedApplicationData);
+                showAlert('Application submitted successfully!', 'success');
+                resolve(true);
+              } else {
+                showAlert('Failed to update application data.', 'error');
+                resolve(false);
+              }
+            } else {
+              showAlert("Failed to upload ID", 'error');
+              resolve(false);
+            }
           } else {
-            console.error("Failed to upload ID");
-            return false;
+            showAlert("No ID selected", 'error');
+            resolve(false);
           }
-        } else {
-          console.error("No ID selected");
-          return false;
+        } catch (error: any) {
+          showAlert(error.message, 'error');
+          resolve(false);
         }
-      } catch (error) {
-        console.error("Error submitting final step:", error);
-        return false;
-      } finally {
-        setIsSubmitting(false);
-      }
-      return true;
+      });
     }
   }));
 
@@ -76,8 +83,6 @@ const StepFinal = forwardRef((props: Props, ref) => {
           />
         )}
       </View>
-
-      {isSubmitting && <Text className="text-white">Submitting...</Text>}
     </View>
   );
 });

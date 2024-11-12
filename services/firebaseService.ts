@@ -7,7 +7,7 @@ import { FIREBASE_AUTH, FIREBASE_DB } from '@/FirebaseConfig'
 import { ApplicationData, SignUpUserInterface, UserInterface } from '@/interfaces/userInterfaces';
 import { addDoc,  query, where, getDocs, collection } from "firebase/firestore";
 import { InitialApplicationData } from '@/interfaces/userInterfaces';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
 
 // Todo: implement Google Login
@@ -98,42 +98,53 @@ export const fetchUserDataFromFirestore = async (userAuthId: string): Promise<Us
 export const uploadIDToFirebaseStorage = async (file: any): Promise<string | null> => {
   try {
     const storage = getStorage();
-    const storageRef = ref(storage, `ids/${file.name}`); // Create a reference to the file
 
     // Convert the file URI to an array buffer
-    const response = await fetch(file.uri);
+    const response = await fetch(file);
+
     const blob = await response.blob();
-    const fileData = await blob.arrayBuffer();
 
-    // Upload the file
-    await uploadBytes(storageRef, fileData);
+    const storageRef = ref(storage, `ids/${new Date().getTime()}`); // Create a reference to the file
+    // Upload the file and return the download URL in a Promise
+    return new Promise((resolve, reject) => {
+      const uploadTask = uploadBytesResumable(storageRef, blob);
 
-    // Get the download URL
-    const downloadURL = await getDownloadURL(storageRef);
-    return downloadURL;
+      uploadTask.on("state_changed",
+        (snapshot) => {
+          // Implement progress bar if needed
+        },
+        (error) => {
+          reject(error); // Reject the promise on error
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          resolve(downloadURL); // Resolve the promise with the download URL
+        }
+      );
+    });
   } catch (error) {
-    console.error("Error uploading ID:", error);
-    return null;
+    throw error;
   }
 };
 
-export const updateUserFirestoreDocument = async (userAuthId: string, applicationData: Partial<ApplicationData>) => { // Update type here
+export const updateUserFirestoreDocument = async (userAuthId: string, applicationData: Partial<ApplicationData>) => {
   try {
     const db = getFirestore();
-    // Access userAuthId from applicationData
-    const userDocRef = doc(db, "users", userAuthId!);
+    const usersCollection = collection(db, 'users'); // Get the users collection
+    const q = query(usersCollection, where('userAuthId', '==', userAuthId)); // Query by userAuthId
+    const querySnapshot = await getDocs(q);
 
-    // Update the user's document with the new application data
-    const updatedData = {
-      applicationData: {
-        ...applicationData
-      }
+    if (!querySnapshot.empty) {
+      const docRef = doc(db, 'users', querySnapshot.docs[0].id); // Get the document reference
+
+      // Update the user's document with the new application data
+      await updateDoc(docRef, { ...applicationData });
+
+      return true
+    } else {
+      throw new Error('User data not found.');
     }
-    await updateDoc(userDocRef, updatedData);
-
-    console.log("Document updated successfully!");
   } catch (error) {
-    console.error("Error updating document:", error);
     throw new Error('Failed to update user data. Please try again later.');
   }
 };

@@ -34,10 +34,8 @@ const Step4 = forwardRef((props: Props, ref) => {
 
   useImperativeHandle(ref, () => ({
     submit: () => {
-      console.log('Submit')
       return new Promise((resolve) => {
         handleSubmit((data: formData) => {
-          console.log('handleSubmit')
           const updatedData: Partial<ApplicationData> = {
             ...data,
             idFilePath: idFilePath,

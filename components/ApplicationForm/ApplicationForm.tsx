@@ -44,6 +44,7 @@ const ApplicationForm = (props: Props) => {
   }
 
   const handleFinish = async () => {
+    setIsUserLoading(true);
     try {
       const isValid = await stepRefs.current[currentStep]?.submit();
       if (isValid) {
@@ -55,6 +56,8 @@ const ApplicationForm = (props: Props) => {
       }
     } catch (error) {
       console.error("Error submitting step:", error);
+    } finally {
+      setIsUserLoading(false);
     }
   }
 
