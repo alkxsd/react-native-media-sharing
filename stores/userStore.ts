@@ -37,7 +37,7 @@ export const useUserStore = create<UserInterface & UserActions>()(
         })),
       updateApplicationData: (data) => set((state) => ({ applicationData: { ...state.applicationData, ...data } })),
       resetApplicationData: () => set({ applicationData: initialUserState.applicationData }),
-      fetchUserData: async (userAuthId: string) => {
+      fetchUserData: async (userAuthId: string): Promise<void> => {
         set({ isUserLoading: true, error: null });
         try {
           const response = await fetchUserDataFromFirestore(userAuthId);
@@ -57,7 +57,6 @@ export const useUserStore = create<UserInterface & UserActions>()(
               const response = await fetchUserDataFromFirestore(userAuthId);
               set({ applicationData: response });
             } catch (createError) {
-              console.error('Error creating user data:', createError);
               set({ error: 'Failed to create user data.' });
             }
           } else {

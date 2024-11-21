@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Tabs, router } from 'expo-router'
 import { icons } from '@/constants/Index'
 import TabIcon from '@/components/navigation/TabIcon'
@@ -6,7 +6,6 @@ import { AppColors } from '@/constants/AppColors'
 import { useAuth } from '@/contexts/AuthContext'
 import { useUserStore } from '@/stores/userStore'
 import Loader from '@/components/Loader'
-import Toast from 'react-native-toast-message'
 
 type Props = {}
 
@@ -22,27 +21,30 @@ const TabsLayout = (props: Props) => {
   const applicationData = useUserStore((state) => state.applicationData)
   const resetApplicationData = useUserStore((state) => state.resetApplicationData)
 
+
   useEffect(() => {
-    if (!isAuthLoading && !user) {
-      router.replace('/sign-in')
-    } else if (!isAuthLoading && user) {
-      if (Object.keys(applicationData).length === 0) {
-        // If applicationData is empty, fetch user data
-        console.log('Fetching User Data from "users" firestore');
-        fetchUserData(user.uid)
-      } else if (userAuthId !== user.uid) {
-        // If a different user logs in, reset the store and fetch their data
-        setAuthUserId(user.uid)
-        resetApplicationData()
-        console.log('User diff from user prev auth: Fetching User Data from "users" firestore');
-        fetchUserData(user.uid)
-      } else {
-        // If the same user logs in, just update the userId (if needed)
-        console.log('Setting current user only: no data fetching')
-        setAuthUserId(user.uid)
+    const handleUserAuthentication = async () => {
+      if (!isAuthLoading && !user) {
+        router.replace('/sign-in');
+        return;
       }
-    }
-  }, [user, isAuthLoading, userAuthId])
+
+      if (!isAuthLoading && user) {
+        if (userAuthId !== user.uid) {
+          setAuthUserId(user.uid);
+          resetApplicationData();
+          await fetchUserData(user.uid);
+        } else if (Object.keys(applicationData).length === 0) {
+          await fetchUserData(user.uid);
+        } else {
+          console.log('Setting current user only: no data fetching');
+          setAuthUserId(user.uid);
+        }
+      }
+    };
+
+    handleUserAuthentication();
+  }, [user, isAuthLoading]);
 
   return (
     <>

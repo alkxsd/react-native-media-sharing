@@ -9,6 +9,7 @@ import { Link, router } from 'expo-router'
 import images from '@/constants/Images'
 import ErrorMessage from '@/components/Forms/ErrorMessage'
 import { signInUser } from '@/services/firebaseService'
+import useAlert from '@/hooks/useAlert'
 
 const signInSchema = z.object({
   email: z.string().email('Must be a valid email address').min(1, 'Email is required'),
@@ -25,6 +26,7 @@ const SignIn = (props: Props) => {
   })
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const { showAlert } = useAlert();
 
   const submit = async (data: SignInFormData) => {
     // TODO: prevent brute-force login, limit login only?
@@ -33,10 +35,7 @@ const SignIn = (props: Props) => {
       const user = await signInUser(data.email, data.password)
       if (user) router.replace('/(tabs)/home')
     } catch (error: any) {
-      setError('root.firebase', {
-        type: 'manual',
-        message: error.message, // Use the Firebase error message directly
-      });
+      showAlert(error.message, 'error')
     } finally {
       setIsLoading(false)
     }

@@ -1,5 +1,5 @@
 import { SafeAreaView, ScrollView, Text, View, Image, Platform, KeyboardAvoidingView } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import CustomTextInput from '@/components/Forms/CustomTextInput'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router';
@@ -10,7 +10,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signUpUser } from '@/services/firebaseService';
 import Loader from '@/components/Loader';
-import { SignUpUserInterface } from '@/interfaces/userInterfaces';
+import { ApplicationData, SignUpUserInterface } from '@/interfaces/userInterfaces';
+import useAlert from '@/hooks/useAlert';
 import { useUserStore } from '@/stores/userStore';
 
 export const signUpSchema = z.object({
@@ -49,9 +50,11 @@ const SignUp = (props: Props) => {
   })
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { showAlert } = useAlert();
+  const updateApplicationData = useUserStore((state) => state.updateApplicationData)
 
   const submit = async (data: SignUpFormData) => {
-    setIsLoading(true);
+    setIsLoading(true)
 
     try {
       // Firebase signup
@@ -64,12 +67,17 @@ const SignUp = (props: Props) => {
 
       const user = await signUpUser(signUpData)
 
-      if (user) router.replace('/(tabs)/home'); // Redirect to sign-in after successful signup
+      if (user) {
+        // Set initial application form value
+        const updatedData: Partial<ApplicationData> = {
+          firstName: signUpData.firstName,
+          lastName: signUpData.lastName,
+        };
+        updateApplicationData(updatedData);
+        router.replace('/(tabs)/home') // Redirect to sign-in after successful signup
+      }
     } catch (error: any) {
-      setError('root.signup', {
-        type: 'manual',
-        message: error.message
-      })
+      showAlert( error.message, 'error')
     } finally {
       setIsLoading(false)
     }

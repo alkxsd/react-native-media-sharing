@@ -3,8 +3,9 @@ import { FIREBASE_AUTH } from '@/FirebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 
 interface AuthContextType {
-  user: any | null; // Or your custom User type
+  user: any | null;
   isAuthLoading: boolean;
+  setUser: React.Dispatch<React.SetStateAction<any | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -24,7 +25,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, [FIREBASE_AUTH])
 
   return (
-    <AuthContext.Provider value={{ user, isAuthLoading }}>
+    <AuthContext.Provider value={{ user, isAuthLoading, setUser }}>
       {children}
     </AuthContext.Provider>
   )
